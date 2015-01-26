@@ -1,4 +1,4 @@
-# 小步语义的实现
+# simple的实现
 # create by xiongwei
 
 # 表达式
@@ -16,6 +16,11 @@ class Number < Struct.new(:value)
 	def reducible?
 		false
 	end
+	
+	# 大步语义
+	def evaluate( environment)
+		self
+	end
 end
 #   布尔
 class Boolean < Struct.new(:value)
@@ -29,6 +34,11 @@ class Boolean < Struct.new(:value)
 	
 	def reducible?
 		false
+	end
+	
+	# 大步语义
+	def evaluate( environment)
+		self
 	end
 end
 
@@ -47,6 +57,11 @@ class Variable < Struct.new(:name)
 	end
 	
 	def reduce( environment)
+		environment[ name]
+	end
+	
+	# 大步语义
+	def evaluate( environment)
 		environment[ name]
 	end
 end
@@ -75,6 +90,11 @@ class Add < Struct.new(:left, :right)
 			Number.new( left.value + right.value)
 		end
 	end
+	
+	# 大步语义
+	def evaluate( environment)
+		Number.new( left.evaluate( environment).value + right.evaluate( environment).value)
+	end
 end
 #   乘法
 class Multiply < Struct.new(:left, :right)
@@ -98,6 +118,11 @@ class Multiply < Struct.new(:left, :right)
 		else
 			Number.new( left.value * right.value)
 		end
+	end
+	
+	# 大步语义
+	def evaluate( environment)
+		Number.new( left.evaluate( environment).value * right.evaluate( environment).value)
 	end
 end
 #   小于运算
@@ -123,6 +148,11 @@ class LessThen < Struct.new(:left, :right)
 			Boolean.new( left.value < right.value)
 		end
 	end
+	
+	# 大步语义
+	def evaluate( environment)
+		Number.new( left.evaluate( environment).value < right.evaluate( environment).value)
+	end
 end
 
 # 语句
@@ -142,6 +172,11 @@ class DoNothing
 	
 	def reducible?
 		false
+	end
+	
+	# 大步语义
+	def evaluate( environment)
+		environment
 	end
 end
 
@@ -165,6 +200,11 @@ class Assign < Struct.new(:name, :expression)
 		else
 			[DoNothing.new, environment.merge( {name => expression})]
 		end
+	end
+	
+	# 大步语义
+	def evaluate( environment)
+		environment.merge( { name => expression.evaluate( environment) })
 	end
 end
 
@@ -194,6 +234,16 @@ class If < Struct.new( :condition, :consequence, :alternative)
 			end
 		end
 	end
+	
+	# 大步语义
+	def evaluate( environment)
+		case condition.evaluate( environment)
+		when Boolean.new( true)
+			consequence.evaluate( environment)
+		when Boolean.new( false)
+			alternative.evaluate( environment)
+		end
+	end
 end
 
 #  Sequence序列
@@ -203,7 +253,7 @@ class Sequence < Struct.new(:first, :second)
 	end
 	
 	def inspect
-		"#{self}"
+		"<<#{self}>>"
 	end
 	
 	def reducible?
@@ -218,6 +268,11 @@ class Sequence < Struct.new(:first, :second)
 			reduced_first, reduced_environment = first.reduce( environment)
 			[Sequence.new( reduced_first, second), reduced_environment]
 		end
+	end
+	
+	# 大步语义
+	def evaluate( environment)
+		second.evaluate( first.evaluate( environment))
 	end
 end
 
@@ -237,6 +292,15 @@ class While < Struct.new(:condition, :body)
 	
 	def reduce( environment)
 		[If.new( condition, Sequence.new( body, self), DoNothing.new), environment]
+	end
+	
+	def evaluate( environment)
+		case condition.evaluate( environment)
+		when Boolean.new( true)
+			evaluate( body.evaluate( environment))
+		when Boolean.new( false)
+			environment
+		end
 	end
 end
 
