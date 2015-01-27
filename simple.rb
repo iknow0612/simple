@@ -21,6 +21,11 @@ class Number < Struct.new(:value)
 	def evaluate( environment)
 		self
 	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { #{value.inspect} }"
+	end
 end
 #   布尔
 class Boolean < Struct.new(:value)
@@ -39,6 +44,11 @@ class Boolean < Struct.new(:value)
 	# 大步语义
 	def evaluate( environment)
 		self
+	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { #{value.inspect} }"
 	end
 end
 
@@ -63,6 +73,11 @@ class Variable < Struct.new(:name)
 	# 大步语义
 	def evaluate( environment)
 		environment[ name]
+	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { e[#{name.inspect}] }"
 	end
 end
 
@@ -95,6 +110,11 @@ class Add < Struct.new(:left, :right)
 	def evaluate( environment)
 		Number.new( left.evaluate( environment).value + right.evaluate( environment).value)
 	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { (#{left.to_ruby}).call( e) + (#{right.to_ruby}).call( e) }"
+	end
 end
 #   乘法
 class Multiply < Struct.new(:left, :right)
@@ -123,6 +143,11 @@ class Multiply < Struct.new(:left, :right)
 	# 大步语义
 	def evaluate( environment)
 		Number.new( left.evaluate( environment).value * right.evaluate( environment).value)
+	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { (#{left.to_ruby}).call( e) * (#{right.to_ruby}).call(e ) }"
 	end
 end
 #   小于运算
@@ -153,6 +178,11 @@ class LessThen < Struct.new(:left, :right)
 	def evaluate( environment)
 		Number.new( left.evaluate( environment).value < right.evaluate( environment).value)
 	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { (#{left.to_ruby}).call( e) < (#{right.to_ruby}).call(e ) }"
+	end
 end
 
 # 语句
@@ -177,6 +207,11 @@ class DoNothing
 	# 大步语义
 	def evaluate( environment)
 		environment
+	end
+	
+	# 指称语义
+	def to_ruby
+		'-> e { e }'
 	end
 end
 
@@ -205,6 +240,11 @@ class Assign < Struct.new(:name, :expression)
 	# 大步语义
 	def evaluate( environment)
 		environment.merge( { name => expression.evaluate( environment) })
+	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { e.merge({ #{name.inspect} => (#{expression.to_ruby}).call( e) }) }"
 	end
 end
 
@@ -244,6 +284,14 @@ class If < Struct.new( :condition, :consequence, :alternative)
 			alternative.evaluate( environment)
 		end
 	end
+	
+	# 指称语义
+	def to_ruby
+		"-> e { if (#{condition.to_ruby}).call( e)" +
+			" then (#{consequence.to_ruby}).call( e)" +
+			" else (#{alternative.to_ruby}).call( e)" +
+			" end }"
+	end
 end
 
 #  Sequence序列
@@ -274,6 +322,11 @@ class Sequence < Struct.new(:first, :second)
 	def evaluate( environment)
 		second.evaluate( first.evaluate( environment))
 	end
+	
+	#指称语义
+	def to_ruby
+		"-> e { (#{second.to_ruby}).call( (#{first.to_ruby}).call( e)) }"
+	end
 end
 
 #  While循环
@@ -291,9 +344,10 @@ class While < Struct.new(:condition, :body)
 	end
 	
 	def reduce( environment)
-		[If.new( condition, Sequence.new( body, self), DoNothing.new), environment]
+		[If.new( condition, Sequence.new( body, self), DoNothing.new), environme nt]
 	end
 	
+	# 大步语义
 	def evaluate( environment)
 		case condition.evaluate( environment)
 		when Boolean.new( true)
@@ -301,6 +355,14 @@ class While < Struct.new(:condition, :body)
 		when Boolean.new( false)
 			environment
 		end
+	end
+	
+	#指称语义
+	def to_ruby
+		"-> e {" +
+			"while (#{condition.to_ruby}).call( e); e = (#{body.to_ruby}).call( e); end;" +
+			" e" +
+			" }"
 	end
 end
 
