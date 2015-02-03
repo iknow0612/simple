@@ -70,3 +70,34 @@ nfa_design.accepts?( 'aa')
 nfa_design.accepts?( 'aaa')
 nfa_design.accepts?( 'aaaaa')
 nfa_design.accepts?( 'aaaaaa')
+
+# 正则表达式
+parrtern =
+Repeat.new(
+Choose.new(
+Concatenate.new( Literal.new( 'a'), Literal.new( 'b')),
+Literal.new( 'a')
+))
+
+nfa_design = Empty.new.to_nfa_design
+nfa_design.accepts?( '')
+nfa_design.accepts?( 'a')
+nfa_design = Literal.new( 'a').to_nfa_design
+nfa_design.accepts?( '')
+nfa_design.accepts?( 'a')
+nfa_design.accepts?( 'b')
+
+Empty.new.matches?( 'a')
+Literal.new( 'a').matches?( 'a')
+
+pattern = Concatenate.new( Literal.new( 'a'), Literal.new( 'b'))
+pattern.matches?( 'a')
+pattern.matches?( 'ab')
+pattern.matches?( 'abc')
+pattern =
+Concatenate.new(
+Literal.new( 'a'),
+Concatenate.new( Literal.new( 'b'), Literal.new( 'c')))
+pattern.matches?( 'a')
+pattern.matches?( 'ab')
+pattern.matches?( 'abc')
