@@ -101,3 +101,27 @@ Concatenate.new( Literal.new( 'b'), Literal.new( 'c')))
 pattern.matches?( 'a')
 pattern.matches?( 'ab')
 pattern.matches?( 'abc')
+
+pattern = Choose.new( Literal.new( 'a'), Literal.new( 'b'))
+pattern.matches?( 'a')
+pattern.matches?( 'b')
+pattern.matches?( 'c')
+
+pattern = Repeat.new( Literal.new( 'a'))
+pattern.matches?( '')
+pattern.matches?( 'a')
+pattern.matches?( 'aaaa')
+pattern.matches?( 'b')
+
+pattern =
+Repeat.new(
+Concatenate.new(
+Literal.new( 'a'),
+Choose.new( Empty.new, Literal.new( 'b'))))
+pattern.matches?( '')
+pattern.matches?( 'a')
+pattern.matches?( 'ab')
+pattern.matches?( 'aba')
+pattern.matches?( 'abab')
+pattern.matches?( 'abaab')
+pattern.matches?( 'abba')

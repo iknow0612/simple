@@ -189,9 +189,13 @@ class Concatenate < Struct.new( :first, :second)
         first_nfa_design = first.to_nfa_design
         second_nfa_design = second.to_nfa_design
 
+        # 第一个NFA的起始状态
         start_state = first_nfa_design.start_state
+        # 第二个NFA的接受状态
         accept_states = second_nfa_design.accept_states
+        # 两台NFA的所有规则
         rules = first_nfa_design.rulebook.rules + second_nfa_design.rulebook.rules
+        # 一些额外的自由移动，可以把第一台NFA旧的接受状态与第二个NFA的其实状态连接起来
         extra_rules = first_nfa_design.accept_states.map { |state|
             FARule.new( state, nil, second_nfa_design.start_state)
         }
@@ -211,6 +215,26 @@ class Choose < Struct.new( :first, :second)
     def precedence
         0
     end
+
+    # 语法转换NFA
+    def to_nfa_design
+        first_nfa_design = first.to_nfa_design
+        second_nfa_design = second.to_nfa_design
+
+        # 一个新的起始状态
+        start_state = Object.new
+        # 两台NFA的所有接受状态
+        accept_states = first_nfa_design.accept_states + second_nfa_design.accept_states
+        # 两台NFA的所有规则
+        rules = first_nfa_design.rulebook.rules + second_nfa_design.rulebook.rules
+        # 两个额外的自由移动，可以把新的起始状态与NFA旧的起始状态连接起来
+        extra_rules = [ first_nfa_design, second_nfa_design].map { |nfa_design|
+            FARule.new( start_state, nil, nfa_design.start_state)
+        }
+        rulebook = NFARulebook.new( rules + extra_rules)
+
+        NFADesign.new( start_state, accept_states, rulebook)
+    end
 end
 
 class Repeat < Struct.new( :pattern)
@@ -222,5 +246,26 @@ class Repeat < Struct.new( :pattern)
 
     def precedence
         2
+    end
+
+    # 语法转换NFA
+    def to_nfa_design
+        pattern_nfa_design = pattern.to_nfa_design
+
+        # 一个新的起始状态，它也是一个接受状态
+        start_state = Object.new
+        # 旧的NFA中所有的接受规则
+        accept_states = pattern_nfa_design.accept_states + [ start_state]
+        # 旧的NFA中所有的规则
+        rules = pattern_nfa_design.rulebook.rules
+        # 一些额外的自由移动，把旧的FNA的每一个接受状态与旧的起始状态连接起来；另一些自由移动，把新的起始状态与旧的起始状态连接起来
+        extra_rules =
+            pattern_nfa_design.accept_states.map { |accept_state|
+                FARule.new( accept_state, nil, pattern_nfa_design.start_state)
+            } +
+            [ FARule.new( start_state, nil, pattern_nfa_design.start_state)]
+        rulebook = NFARulebook.new( rules + extra_rules)
+
+        NFADesign.new( start_state, accept_states, rulebook)
     end
 end
