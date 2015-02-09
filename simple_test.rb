@@ -136,3 +136,15 @@ Assign.new( :x, Multiply.new( Variable.new( :x), Number.new( 3)))
 statement.to_ruby
 proc = eval( statement.to_ruby)
 proc.call( { x: 1})
+
+# 语法解析
+require 'treetop'
+Treetop.load( 'simple')
+parse_tree = SimpleParser.new.parse( 'while (x < 5) { x = x * 3 }')
+statement = parse_tree.to_ast
+statement.evaluate( { x: Number.new( 1) })
+statement.to_ruby
+
+expression = SimpleParser.new.parse( '1 * 2 * 3 * 4', root: :expression).to_ast
+expression.left
+expression.right
