@@ -125,3 +125,11 @@ pattern.matches?( 'aba')
 pattern.matches?( 'abab')
 pattern.matches?( 'abaab')
 pattern.matches?( 'abba')
+
+# 解析
+require 'treetop'
+Treetop.load( 'pattern')
+parse_tree = PatternParser.new.parse( '(a(|b))*')
+pattern = parse_tree.to_ast
+pattern.matches?( 'abaab')
+pattern.matches?( 'abba')
