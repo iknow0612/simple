@@ -1,6 +1,8 @@
 # 测试代码
 # Create by xiongwei
 
+require( './simple.rb')
+
 # 小步语义
 #  虚拟机运算
 Machine.new(

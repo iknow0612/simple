@@ -1,6 +1,8 @@
 # 有限自动机测试
 # create by xiongwei
 
+require( './pattern.rb')
+
 # 确定性有限自动机
 rulebook = DFARulebook.new( [
 FARule.new( 1, 'a', 2), FARule.new( 1, 'b', 1),
