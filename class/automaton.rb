@@ -1,7 +1,6 @@
 ## 模式自动机的类
 ## create by xiongwei
 
-require 'set'
 
 class FARule < Struct.new( :state, :character, :next_state)
     def applies_to?( state, character)
@@ -17,7 +16,7 @@ class FARule < Struct.new( :state, :character, :next_state)
     end
 end
 
-# 确定性有限自动机
+## 确定性有限自动机
 class DFARulebook < Struct.new( :rules)
     def next_state( state, character)
         rule_for( state, character).follow
@@ -27,7 +26,7 @@ class DFARulebook < Struct.new( :rules)
         rules.detect { |rule| rule.applies_to?( state, character) }
     end
 end
-#  DFA
+# DFA
 class DFA < Struct.new( :current_state, :accept_states, :rulebook)
     def accepting?
         accept_states.include?( current_state)
@@ -43,7 +42,7 @@ class DFA < Struct.new( :current_state, :accept_states, :rulebook)
         end
     end
 end
-#  DFADesign 自动构建一次性DFA实例
+# DFADesign 自动构建一次性DFA实例
 class DFADesign < Struct.new( :start_state, :accept_states, :rulebook)
     def to_dfa
         DFA.new( start_state, accept_states, rulebook)
@@ -54,7 +53,8 @@ class DFADesign < Struct.new( :start_state, :accept_states, :rulebook)
     end
 end
 
-# 非确定性有限自动机
+## 非确定性有限自动机
+require 'set'
 class NFARulebook < Struct.new( :rules)
     def next_states( states, character)
         states.flat_map { |state| follow_rules_for( state, character) }.to_set
@@ -84,7 +84,7 @@ class NFARulebook < Struct.new( :rules)
         rules.map( &:character).compact.uniq
     end
 end
-#  NFA
+# NFA
 class NFA < Struct.new( :current_states, :accept_states, :rulebook)
     def accepting?
         ( current_states & accept_states).any?
@@ -105,7 +105,7 @@ class NFA < Struct.new( :current_states, :accept_states, :rulebook)
         rulebook.follow_free_moves( super)
     end
 end
-#  NFADesign 自动构建NFA实例
+# NFADesign 自动构建NFA实例
 class NFADesign < Struct.new( :start_state, :accept_states, :rulebook)
     def accepts?( string)
         to_nfa.tap { |nfa| nfa.read_string( string) }.accepting?
