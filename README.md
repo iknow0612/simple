@@ -6,13 +6,20 @@
 
 
 ## class 文件夹
+
 ### automaton.rb
 模拟自动机，实现确定性有限自动机和非确定性有限自动机的类
 
 ### pda.rb
 PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动机的类
 
+### lexical_analyzer.rb
+词法分析器
+
+
+
 ## 根目录
+
 ### simple.rb
 一个ruby构造的玩具级别语言
 
@@ -29,3 +36,6 @@ PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动�
 
 ### npda_test.rb
 非确定性下推自动机测试
+
+### lexical_analyzer_test.rb
+词法分析测试
