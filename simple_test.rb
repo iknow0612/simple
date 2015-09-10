@@ -1,7 +1,7 @@
 # 测试代码
 # Create by xiongwei
 
-require( './simple.rb')
+require( './class/simple.rb')
 
 # 小步语义
 #  虚拟机运算
@@ -19,8 +19,8 @@ LessThen.new( Number.new(5), Add.new( Number.new(2), Number.new(2)))
 
 #  加入变量
 Machine.new(
-Add.new( Variable.new(:x), Variable.new(:y)),
-{ x: Number.new(3), y: Number.new(4) }
+Add.new( Variable.new(:x), Number.new(4)),
+{ x: Number.new(3) }
 ).run
 
 #  赋值表达式

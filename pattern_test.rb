@@ -1,7 +1,7 @@
 # 有限自动机测试
 # create by xiongwei
 
-require( './pattern.rb')
+require( './class/pattern.rb')
 
 # 确定性有限自动机
 rulebook = DFARulebook.new( [
