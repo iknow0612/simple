@@ -25,6 +25,9 @@ PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动�
 ### lexical_analyzer.rb
 词法分析器
 
+### dtm.rb
+图灵机的模拟
+
 
 
 ## 根目录
@@ -49,3 +52,11 @@ PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动�
 
 ### lexical_analyzer_test.rb
 词法分析测试
+
+### syntactic_analysis_test.rb
+语法分析测试
+
+### dtm_test.rb
+- 模拟纸带的测试
+- 图灵机的测试
+- 使用图灵机识别'aaabbbccc'字符串
