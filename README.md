@@ -60,3 +60,6 @@ PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动�
 - 模拟纸带的测试
 - 图灵机的测试
 - 使用图灵机识别'aaabbbccc'字符串
+
+### impersonating_lambda_test.rb
+模拟 lambda 演算（包含实现和测试）
