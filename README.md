@@ -63,3 +63,6 @@ PushDown Automaton<br>实现确定性下推自动机和非确定性下推自动�
 
 ### impersonating_lambda_test.rb
 模拟 lambda 演算（包含实现和测试）
+
+### programs_can_refer_to_themselves.rb
+能引用自身的程序
